@@ -1,23 +1,33 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/context/authContext";
+import { api } from "@/app/lib/api";
 
-const login = () => {
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const { login } = useAuth();
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Login: ", email, password);
+    setError("");
+    try {
+      const response = await api.post("/login", { email, password });
+      login(response.data.token);
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Login failed");
+    }
   };
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">
       <div className="bg-white p-8 rounded shadow-md w-96">
-        <h2 className="text-2xl text-black font-bold">Login</h2>
-        <p className="text-gray-500 mb-4">
-          Welcome back! please login to your account.
-        </p>
+        <h2 className="text-2xl font-bold mb-4">Welcome back!</h2>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
@@ -73,4 +83,4 @@ const login = () => {
   );
 };
 
-export default login;
+export default Login;

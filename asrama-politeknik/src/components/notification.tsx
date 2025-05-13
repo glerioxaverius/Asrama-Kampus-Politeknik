@@ -6,7 +6,7 @@ interface NotificationProps {
   onPay: () => void;
 }
 
-const notification: React.FC<NotificationProps> = ({
+const Notification: React.FC<NotificationProps> = ({
   message,
   onClose,
   onPay,
@@ -36,4 +36,4 @@ const notification: React.FC<NotificationProps> = ({
   );
 };
 
-export default notification;
+export default Notification;

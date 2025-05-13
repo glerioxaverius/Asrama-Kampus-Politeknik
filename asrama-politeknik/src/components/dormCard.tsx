@@ -1,25 +1,50 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { inherits } from "util";
 
 interface DormCardProps {
   name: string;
+  location: string;
   capacity: string;
   facilities: string[];
   link: string;
+  imageLink: string;
+  gender: string;
 }
 
 const dormCard: React.FC<DormCardProps> = ({
   name,
+  location,
   capacity,
   facilities,
   link,
+  imageLink,
+  gender,
 }) => {
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden">
       <div className="px-6 py-4">
-        <div className="font-bold text-xl mb-2">{name}</div>
-        <p className="text-gray-700 text-base">Kapasitas: {capacity}</p>
-        <p className="text-gray-700 text-base">
+        {imageLink ? (
+          <img
+            src={imageLink}
+            alt={name}
+            className="w-full h-32 object-cover rounded-md mb-2"
+          />
+        ) : (
+          <div className="w-full h-32 bg-gray-200 rounded-md mb-2 flex items-center justify-center">
+            Tidak ada gambar
+          </div>
+        )}
+        <div className="text-black font-bold text-xl mb-2">{name}</div>
+        <div className="text-black font-normal text-xl mb-2">{location}</div>
+        <div className="flex justify-between">
+          <p className="text-black text-base">Kapasitas: {capacity}</p>
+          <div className="bg-gray-700 text-white rounded-xl w-auto px-3">
+            {gender}
+          </div>
+        </div>
+        <p className="text-black text-base">
           Fasilitas: {facilities.join(`, `)}
         </p>
       </div>
@@ -27,7 +52,9 @@ const dormCard: React.FC<DormCardProps> = ({
         <Link
           href={link}
           className="inline-block bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-700"
-        ></Link>
+        >
+          Detail
+        </Link>
       </div>
     </div>
   );
