@@ -4,21 +4,21 @@ import Image from "next/image";
 import { inherits } from "util";
 
 interface DormCardProps {
+  dormId: number;
   name: string;
   location: string;
   capacity: string;
   facilities: string[];
-  link: string;
   imageLink: string;
   gender: string;
 }
 
 const dormCard: React.FC<DormCardProps> = ({
+  dormId,
   name,
   location,
   capacity,
   facilities,
-  link,
   imageLink,
   gender,
 }) => {
@@ -50,7 +50,7 @@ const dormCard: React.FC<DormCardProps> = ({
       </div>
       <div className="px-6 py-4">
         <Link
-          href={link}
+          href={`/details/${dormId}`}
           className="inline-block bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-700"
         >
           Detail

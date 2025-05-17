@@ -32,7 +32,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const fetchUser = (token: string) => {
     api
-      .get("/users/me", { headers: { Authorization: `Bearer ${token}` } })
+      .get("/me", { headers: { Authorization: `Bearer ${token}` } })
       .then((response) => setUser(response.data))
       .catch((error) => console.error("Error fetching user:", error));
   };

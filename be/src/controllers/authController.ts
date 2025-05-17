@@ -29,7 +29,7 @@ export const login = async (req: Request, res: Response) => {
     const user = result.rows[0];
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "Email atau Kata Sandi salah" });
     }
 
     const token = jwt.sign({ userId: user.id }, "adminDorm123", {

@@ -17,6 +17,15 @@ const Profile = () => {
   const [error, setError] = useState("");
   const [showNotification, setShowNotification] = useState(true);
 
+  const fetchUserProfile = async () => {
+    try {
+      const response = await api.get(`/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } catch (error) {
+      console.error("Error fetching user:", error);
+    }
+  };
   useEffect(() => {
     if (!token) {
       router.push("/login");
@@ -24,9 +33,9 @@ const Profile = () => {
       console.log("Profile.useEffect: authUser:", authUser);
       setUser({ ...authUser });
       setEditedUser({ ...authUser });
+      fetchUserProfile();
     } else {
       console.log("Profile.useEffect: authUser belum tersedia");
-      // Mungkin tambahkan logika loading atau coba fetch user secara terpisah jika authUser tidak selalu tersedia langsung
     }
   }, [token, router, authUser]);
 
@@ -43,7 +52,6 @@ const Profile = () => {
     try {
       if (!editedUser) return;
       await api.put(`/users/${editedUser.id}`, editedUser, {
-        // Asumsi ada endpoint untuk update user
         headers: { Authorization: `Bearer ${token}` },
       });
       setUser({ ...editedUser });
@@ -77,80 +85,87 @@ const Profile = () => {
           <div className="rounded-full h-16 w-16 bg-gray-400 mr-4">
             {/* Letakkan gambar profil disini */}
           </div>
-          <h1 className="text-2xl font-bold">Dashboard</h1>
+          <h1 className="text-2xl font-bold">
+            Selamat Datang, {user?.username}
+          </h1>
         </div>
-        <p className="text-gray-700 mb-8">Menu description.</p>
-
-        <div className="bg-white shadow-md rounded-lg p-6 mb-4">
+        <p className="w-1/3 text-gray-700 mb-8">
+          Platform terpadu untuk mengelola dan mengakses informasi penting serta
+          berkolaborasi dengan tim Anda secara efektif.
+        </p>
+        <div className="w-1/2 ">
           <h2 className="text-xl font-bold mb-2">Informasi Pengguna</h2>
-          {error && <p className="text-red-500 mb-4">{error}</p>}
+          <div className="bg-white shadow-md rounded-lg p-6 mb-4">
+            {error && <p className="text-red-500 mb-4">{error}</p>}
 
-          {isEditing ? (
-            <div>
-              <label
-                className="block text-gray-700 text-sm font-bold mb-2"
-                htmlFor="username"
-              >
-                Username
-              </label>
-              <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                type="text"
-                id="username"
-                name="username"
-                value={editedUser?.username || ""}
-                onChange={handleChange}
-              />
-
-              <label
-                className="block text-gray-700 text-sm font-bold mb-2"
-                htmlFor="email"
-              >
-                Email
-              </label>
-              <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                type="email"
-                id="email"
-                name="email"
-                value={editedUser?.email || ""}
-                onChange={handleChange}
-              />
-
-              {/* Tambahkan input lain untuk field yang bisa diedit */}
-
-              <div className="mt-4">
-                <button
-                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2"
-                  onClick={handleSaveEdit}
+            {isEditing ? (
+              <div>
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="username"
                 >
-                  Simpan
-                </button>
-                <button
-                  className="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded"
-                  onClick={handleCancelEdit}
+                  Username
+                </label>
+                <input
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  type="text"
+                  id="username"
+                  name="username"
+                  value={editedUser?.username || ""}
+                  onChange={handleChange}
+                />
+
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="email"
                 >
-                  Batal
+                  Email
+                </label>
+                <input
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={editedUser?.email || ""}
+                  onChange={handleChange}
+                />
+
+                {/* Tambahkan input lain untuk field yang bisa diedit */}
+
+                <div className="mt-4">
+                  <button
+                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2"
+                    onClick={handleSaveEdit}
+                  >
+                    Simpan
+                  </button>
+                  <button
+                    className="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded"
+                    onClick={handleCancelEdit}
+                  >
+                    Batal
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <h3 className="text-xl font-bold">{user?.username}</h3>
+                <p>Email: {user?.email}</p>
+                <p>Nomor Kamar: </p>
+                <p>Penghuni Kamar:</p>
+                {/* Tampilkan informasi pengguna lainnya */}
+                <button
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+                  onClick={handleEditClick}
+                >
+                  Edit Informasi Pengguna
                 </button>
               </div>
-            </div>
-          ) : (
-            <div>
-              <p>Nama: {user?.username}</p>
-              <p>Email: {user?.email}</p>
-              {/* Tampilkan informasi pengguna lainnya */}
-              <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
-                onClick={handleEditClick}
-              >
-                Edit Informasi Pengguna
-              </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {/* Bagian Penghuni Kamar (Jika Ada) */}
-        {/* <RoomOccupants occupants={user?.roomOccupants} /> */}
       </div>
     </div>
   );

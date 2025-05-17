@@ -153,12 +153,12 @@ const Home = () => {
           {filteredDorms.map((dorm, index) => (
             <DormCard
               key={index}
+              dormId={dorm.id}
               imageLink={dorm.image}
               name={dorm.name}
               location={dorm.location}
               capacity={dorm.capacity}
               facilities={dorm.facilities}
-              link={dorm.link}
               gender={dorm.gender}
             />
           ))}
