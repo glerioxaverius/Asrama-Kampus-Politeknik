@@ -26,17 +26,37 @@ export const login = async (req: Request, res: Response) => {
     const result = await pool.query("SELECT * FROM users WHERE email = $1", [
       email,
     ]);
+    console.log("Result from database:", result.rows); // Log hasil query database
     const user = result.rows[0];
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({ message: "Email atau Kata Sandi salah" });
+    if (user) {
+      console.log("User found:", user); // Log user yang ditemukan
+      console.log("Comparing password:", password, user.password); // Log password yang dibandingkan
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      console.log("isValid: ", isPasswordValid);
+      if (isPasswordValid) {
+        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
+          expiresIn: "1h",
+        });
+        console.log("Token generated:", token); // Log token yang dihasilkan
+        res.cookie("authToken", token, {
+          httpOnly: true,
+          // secure: process.env.NODE_ENV === "production",
+          maxAge: 3600000,
+          path: "/",
+        });
+        res.status(200).json({
+          message: "Login Successful",
+          user: { id: user.id, username: user.username, email: user.email },
+        });
+      } else {
+        res.status(401).json({ message: "Invalid credentials" });
+      }
+    } else {
+      res.status(401).json({ message: "Invalid credentials" });
     }
-
-    const token = jwt.sign({ userId: user.id }, "adminDorm123", {
-      expiresIn: "1h",
-    });
-    res.json({ token });
   } catch (error: any) {
+    console.error("Error during login:", error);
     res.status(500).json({ error: error.message });
   }
 };

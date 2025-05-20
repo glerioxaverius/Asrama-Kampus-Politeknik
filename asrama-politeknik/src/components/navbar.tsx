@@ -1,6 +1,13 @@
+import { useAuth } from "@/app/context/authContext";
 import Link from "next/link";
 
 const Navbar = () => {
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+  };
+
   return (
     <nav className="bg-white py-4">
       <div className="container mx-auto flex justify-between items-center">
@@ -14,10 +21,11 @@ const Navbar = () => {
           <Link href="/profile" className="text-black hover:text-gray-700">
             Profil
           </Link>
-          <button className="bg-blue-600 py-2 px-4 rounded-md hover:bg-blue-700">
-            <Link href="/logout" className="text-white">
-              Logout
-            </Link>
+          <button
+            className="bg-blue-600 py-2 px-4 rounded-md hover:bg-blue-700"
+            onClick={handleLogout}
+          >
+            Logout
           </button>
         </div>
       </div>

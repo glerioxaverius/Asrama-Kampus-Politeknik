@@ -12,7 +12,6 @@ interface DormCardProps {
   imageLink: string;
   gender: string;
 }
-
 const dormCard: React.FC<DormCardProps> = ({
   dormId,
   name,

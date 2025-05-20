@@ -14,22 +14,22 @@ const Home = () => {
   const [filterType, setFilterType] = useState("");
   const [filteredDorms, setFilteredDorms] = useState(dorms);
   const [sortType, setSortType] = useState("");
+  const { isAuthenticated, loadingInitialAuth } = useAuth();
 
   useEffect(() => {
-    console.log("Home.useEffect: Mulai");
-    console.log("Home.useEffect: token:", token);
-    console.log("Home.useEffect: router:", router);
-
-    if (!token) {
-      console.log("Home.useEffect: Tidak ada token, redirecting ke /login");
+    if (!isAuthenticated && !loadingInitialAuth) {
+      // Tambahkan pemeriksaan loading
+      console.log(
+        "Home.useEffect: Tidak terotentikasi atau masih loading, redirecting ke /login"
+      );
       try {
         router.push("/login");
         console.log("Home.useEffect: router.push berhasil");
       } catch (error) {
         console.error("Home.useEffect: Error saat router.push:", error);
       }
-    } else {
-      console.log("Home.useEffect: Ada token, memanggil fetchDorms");
+    } else if (isAuthenticated) {
+      console.log("Home.useEffect: Terotentikasi, memanggil fetchDorms");
       fetchDorms();
     }
 
@@ -38,7 +38,7 @@ const Home = () => {
     return () => {
       console.log("Home.useEffect: Cleanup");
     };
-  }, [token, router]);
+  }, [isAuthenticated, loadingInitialAuth, router]);
 
   const fetchDorms = async () => {
     console.log("fetchDorms: Mulai");
@@ -98,10 +98,9 @@ const Home = () => {
     setFilteredDorms(newSortedDorms);
     console.log("handleSort: Selesai", newSortedDorms);
   };
-
   if (!token) {
     console.log("Home: Tidak ada token, merender null");
-    return null; // Atau tampilkan loading spinner
+    return null;
   }
 
   console.log("Home: Merender");

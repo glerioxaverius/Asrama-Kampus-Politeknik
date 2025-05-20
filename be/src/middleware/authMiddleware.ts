@@ -9,11 +9,10 @@ export const authenticateToken = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+  const token = req.cookies.authToken; // Mengambil token dari cookie
 
-  if (token == null) {
-    res.sendStatus(401);
+  if (!token) {
+    res.status(401).json({ message: "Unauthorized: No token provided" });
     return;
   }
 
@@ -23,13 +22,13 @@ export const authenticateToken = async (
       decoded.userId,
     ]);
     if (result.rows.length === 0) {
-      res.sendStatus(401);
+      res.status(401).json({ message: "Unauthorized: Invalid token" });
       return;
     }
     req.user = { id: decoded.userId };
     next();
   } catch (err) {
-    res.sendStatus(403);
+    res.status(403).json({ message: "Unauthorized: Invalid token" });
     return;
   }
 };

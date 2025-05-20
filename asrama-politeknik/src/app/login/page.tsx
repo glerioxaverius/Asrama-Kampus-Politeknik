@@ -17,7 +17,11 @@ const Login = () => {
     setError("");
     try {
       const response = await api.post("/login", { email, password });
-      login(response.data.token);
+      const { token, user } = response.data;
+
+      login(token, user);
+
+      router.push("/");
     } catch (err: any) {
       setError(err.response?.data?.message || "Login failed");
     }

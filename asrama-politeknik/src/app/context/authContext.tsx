@@ -8,8 +8,10 @@ import { User } from "@/app/types/user";
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (token: string) => void;
+  login: (newToken: string, userData: User) => void;
   logout: () => void;
+  isAuthenticated: boolean;
+  loadingInitialAuth: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -21,39 +23,69 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loadingInitialAuth, setLoadingInitialAuth] = useState(true);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    if (storedToken) {
-      setToken(storedToken);
-      fetchUser(storedToken);
-    }
-  }, [router]);
+    const checkAuthOnLoad = async () => {
+      const storedToken = localStorage.getItem("authToken");
+      const storedUser = localStorage.getItem("authUser");
 
-  const fetchUser = (token: string) => {
-    api
-      .get("/me", { headers: { Authorization: `Bearer ${token}` } })
-      .then((response) => setUser(response.data))
-      .catch((error) => console.error("Error fetching user:", error));
-  };
+      if (storedToken && storedUser) {
+        try {
+          const parsedUser = JSON.parse(storedUser);
+          setToken(storedToken);
+          setUser(parsedUser);
+          setIsAuthenticated(true);
+          // Tambahkan logika opsional untuk memvalidasi token ke backend di sini
+        } catch (error) {
+          console.error("Error parsing auth data from localStorage:", error);
+          // Hapus data yang rusak dari localStorage
+          localStorage.removeItem("authToken");
+          localStorage.removeItem("authUser");
+          setIsAuthenticated(false);
+        }
+      } else {
+        setIsAuthenticated(false);
+      }
+      setLoadingInitialAuth(false); // Selesai memeriksa otentikasi awal
+    };
 
-  const login = (token: string) => {
-    localStorage.setItem("token", token);
-    setToken(token);
-    fetchUser(token);
-    router.push("/");
+    checkAuthOnLoad();
+  }, []);
+
+  const login = (newToken: string, userData: User) => {
+    setToken(newToken);
+    setUser(userData);
+    setIsAuthenticated(true);
+    localStorage.setItem("authToken", newToken);
+    localStorage.setItem("authUser", JSON.stringify(userData));
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
     setToken(null);
     setUser(null);
+    setIsAuthenticated(false);
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("authUser");
     router.push("/login");
   };
 
-  const value: AuthContextType = { user, token, login, logout };
+  const value: AuthContextType = {
+    user,
+    token,
+    login,
+    logout,
+    isAuthenticated,
+    loadingInitialAuth,
+  };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {loadingInitialAuth ? <div>Loading...</div> : children}{" "}
+      {/* Tampilkan loading jika otentikasi awal belum selesai */}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {
