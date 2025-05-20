@@ -1,5 +1,7 @@
+"use client";
+
 import React from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { inherits } from "util";
 
@@ -21,6 +23,13 @@ const dormCard: React.FC<DormCardProps> = ({
   imageLink,
   gender,
 }) => {
+  const router = useRouter();
+
+  const handleDetailClick = () => {
+    router.push(`/details/${dormId}`);
+    console.log(`Navigating to /details/${dormId}`);
+  };
+
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden">
       <div className="px-6 py-4">
@@ -48,12 +57,12 @@ const dormCard: React.FC<DormCardProps> = ({
         </p>
       </div>
       <div className="px-6 py-4">
-        <Link
-          href={`/details/${dormId}`}
+        <button
           className="inline-block bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-700"
+          onClick={handleDetailClick}
         >
           Detail
-        </Link>
+        </button>
       </div>
     </div>
   );

@@ -41,9 +41,10 @@ export const login = async (req: Request, res: Response) => {
         console.log("Token generated:", token); // Log token yang dihasilkan
         res.cookie("authToken", token, {
           httpOnly: true,
-          // secure: process.env.NODE_ENV === "production",
-          maxAge: 3600000,
-          path: "/",
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          maxAge: 3600000, // Contoh 1 jam
+          // HAPUS properti 'domain' jika ada di sini!
         });
         res.status(200).json({
           message: "Login Successful",
@@ -59,4 +60,13 @@ export const login = async (req: Request, res: Response) => {
     console.error("Error during login:", error);
     res.status(500).json({ error: error.message });
   }
+};
+
+export const logoutUser = (req: Request, res: Response) => {
+  res.clearCookie("authToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+  });
+  res.status(200).json({ message: "Logout successful" });
 };

@@ -2,7 +2,7 @@ import { Request } from "express";
 import express from "express";
 
 export interface User {
-  id: number;
+  userId: number;
   username?: string;
   email?: string;
 }
@@ -10,7 +10,7 @@ export interface User {
 declare module "express" {
   interface Request {
     user?: {
-      id: number;
+      userId: number;
     };
   }
 }

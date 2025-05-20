@@ -1,3 +1,4 @@
+// src/routes/userRoutes.ts
 import express from "express";
 import {
   getUserProfile,
@@ -5,11 +6,21 @@ import {
   getDetailById,
 } from "../controllers/userController";
 import { authenticateToken } from "../middleware/authMiddleware";
+import asyncHandler from "../middleware/asyncHandler";
 
 const router = express.Router();
 
-router.get("/me", authenticateToken, getUserProfile);
-router.put("/users/:id", authenticateToken, updateUserProfile);
-router.get("/details/:id", getDetailById);
+// Semua handler harus dibungkus asyncHandler jika mereka async atau memanggil async fungsi
+router.get(
+  "/me",
+  asyncHandler(authenticateToken),
+  asyncHandler(getUserProfile)
+); // <-- Bungkus authenticateToken
+router.put(
+  "/:id",
+  asyncHandler(authenticateToken),
+  asyncHandler(updateUserProfile)
+); // <-- Bungkus authenticateToken
+router.get("/details/:id", asyncHandler(getDetailById)); // getDetailById juga async
 
 export default router;
