@@ -90,8 +90,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const logout = useCallback(async () => {
     console.log("AuthContext.logout: Memulai proses logout...");
     try {
-      // Panggil endpoint logout di backend untuk menghapus cookie
-      await api.post("/logout"); // Asumsikan ada endpoint logout di backend
+      await api.post("/logout"); 
       console.log("AuthContext.logout: Cookie dihapus di backend.");
     } catch (err) {
       console.error(
@@ -108,7 +107,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [router]);
 
-  // Nilai yang akan disediakan oleh context
   const value = {
     user,
     isAuthenticated,

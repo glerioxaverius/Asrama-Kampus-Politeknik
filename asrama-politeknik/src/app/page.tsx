@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import act, { useState, useEffect } from "react";
 import Navbar from "@/components/navbar";
 import DormCard from "@/components/dormCard";
 import { useAuth } from "./context/authContext";

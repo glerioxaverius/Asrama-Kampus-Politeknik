@@ -44,7 +44,6 @@ export const login = async (req: Request, res: Response) => {
           secure: process.env.NODE_ENV === "production",
           sameSite: "lax",
           maxAge: 3600000, // Contoh 1 jam
-          // HAPUS properti 'domain' jika ada di sini!
         });
         res.status(200).json({
           message: "Login Successful",
