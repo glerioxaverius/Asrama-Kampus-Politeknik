@@ -3,26 +3,37 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/authContext";
-import { api } from "@/app/lib/api";
-import { Dorm } from "@/app/types/dorm";
+import { api } from "@/app/lib/api"; // Pastikan path ini benar
+import { Dorm } from "@/app/types/dorm"; // Pastikan path ini benar
 import Navbar from "@/components/navbar";
+import Notification from "@/components/notification"; // Pastikan path ini benar
 
 const DormDetail = () => {
   const params = useParams();
   const router = useRouter();
+  // Gunakan params.id (sesuai struktur folder [id])
   const dormId = params.dormId as string;
 
-  const { isAuthenticated, loadingInitialAuth, logout } = useAuth(); // Ganti 'token' dengan 'isAuthenticated'
+  const { isAuthenticated, loadingInitialAuth, logout, user } = useAuth(); // Ambil juga 'user' untuk status pengajuan
   const [dorm, setDorm] = useState<Dorm | null>(null);
   const [loadingDormData, setLoadingDormData] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // State untuk notifikasi pengajuan
+  const [showApplicationNotification, setShowApplicationNotification] =
+    useState(false);
+  const [applicationError, setApplicationError] = useState<string | null>(null);
+  const [isApplying, setIsApplying] = useState(false); // Untuk menonaktifkan tombol saat proses
+
+  // Status pengajuan dorm pengguna untuk dorm ini
+  // Kita akan mengambil ini dari data user yang sudah ada di AuthContext
+  const userDormApplicationStatus = user?.dormApplicationStatus;
 
   const fetchDormDetail = useCallback(
     async (idToFetch: string) => {
       setLoadingDormData(true);
       setError(null);
       try {
-        // Panggilan ini akan secara otomatis mengirim cookie otentikasi
         const response = await api.get(`/dorms/${idToFetch}`);
         setDorm(response.data);
       } catch (err: any) {
@@ -38,9 +49,10 @@ const DormDetail = () => {
         setLoadingDormData(false);
       }
     },
-    [logout]
-  ); // Dependensi hanya logout
+    [logout] // Dependensi hanya logout
+  );
 
+  // Menggabungkan dua useEffect sebelumnya menjadi satu yang lebih efisien
   useEffect(() => {
     console.log(
       `DormDetail.useEffect: running. loadingInitialAuth: ${loadingInitialAuth}, isAuthenticated: ${isAuthenticated}, dormId: ${dormId}`
@@ -61,7 +73,6 @@ const DormDetail = () => {
       return;
     }
 
-    // Jika sudah terotentikasi dan ID tersedia, baru fetch data
     if (dormId) {
       console.log(
         `DormDetail.useEffect: Terotentikasi dan dormId tersedia. Memanggil fetchDormDetail untuk ID: ${dormId}`
@@ -74,39 +85,44 @@ const DormDetail = () => {
     }
   }, [dormId, isAuthenticated, loadingInitialAuth, router, fetchDormDetail]);
 
-  useEffect(() => {
-    if (loadingInitialAuth) {
-      console.log(
-        "DormDetail.useEffect: Masih memuat status otentikasi awal..."
-      );
-      return;
-    }
-
+  // Handler untuk pengajuan dorm
+  const handleApplyDorm = async () => {
     if (!isAuthenticated) {
-      console.log(
-        "DormDetail.useEffect: Tidak terotentikasi, mengalihkan ke /login."
-      );
-      router.push("/login");
+      setError("Anda harus login untuk mengajukan dorm.");
       return;
     }
+    if (isApplying) return; // Mencegah klik ganda
 
-    if (dormId) {
-      console.log(
-        `DormDetail.useEffect: Terotentikasi dan dormId/token tersedia. Memanggil fetchDormDetail untuk ID: ${dormId}`
+    setIsApplying(true);
+    setApplicationError(null);
+    setShowApplicationNotification(false);
+
+    try {
+      const response = await api.post(`/dorms/${dormId}/apply`);
+      console.log("Dorm application successful:", response.data);
+
+      // Setelah sukses, tampilkan notifikasi dan update state lokal
+      setShowApplicationNotification(true);
+      // Anda juga bisa memicu refresh user data dari AuthContext di sini
+      // Jika AuthContext punya metode refreshUser, bisa dipanggil di sini
+      // Misalnya: refreshUser();
+    } catch (err: any) {
+      console.error("Error applying for dorm:", err);
+      setApplicationError(
+        err.response?.data?.message ||
+          "Gagal mengajukan dorm. Silakan coba lagi."
       );
-      fetchDormDetail(dormId);
-    } else if (!dormId) {
-      console.warn("DormDetail.useEffect: dormId tidak ditemukan di URL.");
-      setError("ID Asrama tidak ditemukan.");
-      setLoadingDormData(false);
-    } else {
-      console.warn(
-        "DormDetail.useEffect: Kondisi tidak terduga: token null setelah otentikasi."
-      );
-      setError("Token otentikasi tidak ditemukan.");
-      setLoadingDormData(false);
+      setShowApplicationNotification(true); // Tetap tampilkan notifikasi untuk error juga
+    } finally {
+      setIsApplying(false);
     }
-  }, [dormId, isAuthenticated, loadingInitialAuth, router, fetchDormDetail]);
+  };
+
+  const handleCloseNotification = () => {
+    setShowApplicationNotification(false);
+    setApplicationError(null); // Bersihkan error notifikasi juga
+  };
+
   if (loadingInitialAuth || loadingDormData) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-50 text-gray-700">
@@ -280,15 +296,63 @@ const DormDetail = () => {
               </p>
             )}
 
-            <button
-              onClick={() => router.back()}
-              className="mt-10 px-8 py-3 bg-blue-600 text-white text-lg font-semibold rounded-md hover:bg-blue-700 transition duration-300 ease-in-out transform hover:scale-105 shadow-lg"
-            >
-              Kembali ke Daftar Asrama
-            </button>
+            <div className="mt-10 border-t pt-6 flex justify-between items-center">
+              {/* Logika menampilkan tombol atau status */}
+              {userDormApplicationStatus === "pending" ? (
+                <p className="text-yellow-600 font-semibold text-lg">
+                  Status Pengajuan: Menunggu Persetujuan
+                </p>
+              ) : userDormApplicationStatus === "approved" ? (
+                <p className="text-green-600 font-semibold text-lg">
+                  Pengajuan Dorm Disetujui! Nomor Kamar: {user?.dormRoomNumber}
+                </p>
+              ) : userDormApplicationStatus === "rejected" ? (
+                <p className="text-red-600 font-semibold text-lg">
+                  Pengajuan Dorm Ditolak.
+                </p>
+              ) : (
+                <button
+                  onClick={handleApplyDorm}
+                  disabled={!dorm.available || isApplying} // Nonaktifkan jika tidak tersedia atau sedang mengajukan
+                  className={`py-3 px-8 rounded-md text-white text-lg font-semibold transition duration-300 ease-in-out transform shadow-lg
+                    ${
+                      dorm.available && !isApplying
+                        ? "bg-blue-600 hover:bg-blue-700 hover:scale-105"
+                        : "bg-gray-400 cursor-not-allowed"
+                    }`}
+                >
+                  {isApplying
+                    ? "Mengajukan..."
+                    : dorm.available
+                    ? "Ajukan Dorm Ini"
+                    : "Dorm Tidak Tersedia"}
+                </button>
+              )}
+
+              <button
+                onClick={() => router.back()}
+                className="py-3 px-8 bg-gray-300 text-gray-800 text-lg font-semibold rounded-md hover:bg-gray-400 transition duration-300 ease-in-out transform hover:scale-105 shadow-lg"
+              >
+                Kembali
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
+      {showApplicationNotification && (
+        <Notification
+          message={
+            applicationError ||
+            "Pengajuan dorm Anda berhasil! Menunggu Persetujuan."
+          }
+          type={applicationError ? "error" : "info"}
+          onClose={handleCloseNotification}
+          onPay={function (): void {
+            throw new Error("Function not implemented.");
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -4,5 +4,5 @@ import { register, login, logoutUser } from "../controllers/authController";
 
 router.post(`/register`, register);
 router.post(`/login`, login);
-router.post("/logout", logoutUser); // Endpoint baru
+router.post("/logout", logoutUser);
 export default router;

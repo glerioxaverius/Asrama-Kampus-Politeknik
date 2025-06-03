@@ -46,9 +46,9 @@ const Register = () => {
 
     setLoading(true); // Mulai loading
     try {
-      const requestURL = api.defaults.baseURL + "/register";
+      const requestURL = api.defaults.baseURL + "/auth/register";
       console.log("Sending request to:", requestURL); //  Konfirmasi URL
-      const response = await api.post("/register", {
+      const response = await api.post("/auth/register", {
         username,
         email,
         password,

@@ -175,104 +175,150 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       <Navbar />
-      <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
-        <div className="p-8">
-          <p className="text-gray-700 mb-8 leading-relaxed">
-            Platform terpadu untuk mengelola dan mengakses informasi penting
-            serta berkolaborasi dengan tim Anda secara efektif. Informasi di
-            bawah ini dapat Anda perbarui.
-          </p>
-
-          <h2 className="text-2xl font-bold mb-4 text-gray-800">
-            Informasi Akun
-          </h2>
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-              {error}
+      <div className="container mx-auto py-12 px-4 md:px-0">
+        <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+          {/* Header Profil */}
+          {/* ... (bagian header sudah ada) */}
+          <div className="p-8 border-b border-gray-200 flex items-center bg-blue-600 text-white">
+            <div className="rounded-full h-20 w-20 bg-blue-400 flex items-center justify-center text-3xl font-semibold mr-6">
+              {user?.username ? user.username.charAt(0).toUpperCase() : "U"}
             </div>
-          )}
-          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
-            {isEditing ? (
-              <div className="space-y-4">
-                <div>
-                  <label
-                    className="block text-gray-700 text-sm font-semibold mb-2"
-                    htmlFor="username"
-                  >
-                    Username
-                  </label>
-                  <input
-                    className="shadow-sm border border-gray-300 rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    type="text"
-                    id="username"
-                    name="username"
-                    value={editedUser?.username || ""}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div>
-                  <label
-                    className="block text-gray-700 text-sm font-semibold mb-2"
-                    htmlFor="email"
-                  >
-                    Email
-                  </label>
-                  <input
-                    className="shadow-sm border border-gray-300 rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={editedUser?.email || ""}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="mt-6 flex justify-end space-x-3">
-                  <button
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-md transition duration-300 ease-in-out transform hover:scale-105"
-                    onClick={handleSaveEdit}
-                  >
-                    Simpan Perubahan
-                  </button>
-                  <button
-                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-5 rounded-md transition duration-300 ease-in-out transform hover:scale-105"
-                    onClick={handleCancelEdit}
-                  >
-                    Batal
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-3 text-gray-800">
-                <p className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
-                  <span className="font-semibold text-gray-600">Username:</span>
-                  <span>{user?.username || "N/A"}</span>
-                </p>
-                <p className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
-                  <span className="font-semibold text-gray-600">Email:</span>
-                  <span>{user?.email || "N/A"}</span>
-                </p>
-                <p className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
-                  <span className="font-semibold text-gray-600">
-                    Nomor Kamar:
-                  </span>
-                  <span>N/A</span>
-                </p>
-                <p className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
-                  <span className="font-semibold text-gray-600">
-                    Penghuni Kamar:
-                  </span>
-                  <span>N/A</span>
-                </p>
-                <div className="mt-6 text-right">
-                  <button
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-md transition duration-300 ease-in-out transform hover:scale-105"
-                    onClick={handleEditClick}
-                  >
-                    Edit Informasi Pengguna
-                  </button>
-                </div>
+            <div>
+              <h1 className="text-3xl font-bold">
+                Selamat Datang, {user?.username || "Pengguna"}!
+              </h1>
+              <p className="text-blue-200 mt-1">
+                Kelola informasi akun Anda di sini.
+              </p>
+            </div>
+          </div>
+          {/* Deskripsi & Informasi Pengguna */}
+          <div className="p-8">
+            <p className="text-gray-700 mb-8 leading-relaxed">
+              Platform terpadu untuk mengelola dan mengakses informasi penting
+              serta berkolaborasi dengan tim Anda secara efektif. Informasi di
+              bawah ini dapat Anda perbarui.
+            </p>
+
+            <h2 className="text-2xl font-bold mb-4 text-gray-800">
+              Informasi Akun
+            </h2>
+            {error && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                {error}
               </div>
             )}
+            <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
+              {isEditing ? (
+                // ... (bagian editing form sudah ada)
+                <div className="space-y-4">
+                  <div>
+                    <label
+                      className="block text-gray-700 text-sm font-semibold mb-2"
+                      htmlFor="username"
+                    >
+                      Username
+                    </label>
+                    <input
+                      className="shadow-sm border border-gray-300 rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      type="text"
+                      id="username"
+                      name="username"
+                      value={editedUser?.username || ""}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      className="block text-gray-700 text-sm font-semibold mb-2"
+                      htmlFor="email"
+                    >
+                      Email
+                    </label>
+                    <input
+                      className="shadow-sm border border-gray-300 rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={editedUser?.email || ""}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="mt-6 flex justify-end space-x-3">
+                    <button
+                      className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-md transition duration-300 ease-in-out transform hover:scale-105"
+                      onClick={handleSaveEdit}
+                    >
+                      Simpan Perubahan
+                    </button>
+                    <button
+                      className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-5 rounded-md transition duration-300 ease-in-out transform hover:scale-105"
+                      onClick={handleCancelEdit}
+                    >
+                      Batal
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-3 text-gray-800">
+                  <p className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
+                    <span className="font-semibold text-gray-600">
+                      Username:
+                    </span>
+                    <span>{user?.username || "N/A"}</span>
+                  </p>
+                  <p className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
+                    <span className="font-semibold text-gray-600">Email:</span>
+                    <span>{user?.email || "N/A"}</span>
+                  </p>
+                  {/* --- TAMBAHKAN BAGIAN INI --- */}
+                  <p className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
+                    <span className="font-semibold text-gray-600">
+                      Nomor Kamar Dorm:
+                    </span>
+                    <span>{user?.dormRoomNumber || "Belum ada"}</span>
+                  </p>
+                  <p className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
+                    <span className="font-semibold text-gray-600">
+                      Status Pengajuan Dorm:
+                    </span>
+                    <span
+                      className={`font-medium ${
+                        user?.dormApplicationStatus === "pending"
+                          ? "text-yellow-600"
+                          : user?.dormApplicationStatus === "approved"
+                          ? "text-green-600"
+                          : user?.dormApplicationStatus === "rejected"
+                          ? "text-red-600"
+                          : "text-gray-500"
+                      }`}
+                    >
+                      {
+                        user?.dormApplicationStatus === "none" ||
+                        !user?.dormApplicationStatus
+                          ? "Belum mengajukan"
+                          : user.dormApplicationStatus === "pending"
+                          ? "Menunggu Persetujuan"
+                          : user.dormApplicationStatus === "approved"
+                          ? "Disetujui"
+                          : user.dormApplicationStatus === "rejected"
+                          ? "Ditolak"
+                          : user.dormApplicationStatus // Fallback if status is unknown
+                      }
+                    </span>
+                  </p>
+                  {/* --- AKHIR BAGIAN BARU --- */}
+                  <div className="mt-6 text-right">
+                    <button
+                      className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-md transition duration-300 ease-in-out transform hover:scale-105"
+                      onClick={handleEditClick}
+                    >
+                      Edit Informasi Pengguna
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

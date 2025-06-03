@@ -4,8 +4,7 @@ import authRoutes from "./routes/authRoutes";
 import dormRoutes from "./routes/dormRoutes";
 import userRoutes from "./routes/userRoutes";
 import dotenv from "dotenv";
-import cookieParser = require("cookie-parser");
-
+import cookieParser from "cookie-parser";
 dotenv.config();
 
 const corsOptions = {
@@ -26,9 +25,10 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/", authRoutes);
-app.use("/dorms", dormRoutes);
-app.use("/users", userRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/dorms", dormRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/", userRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Endpoint tidak ditemukan." });

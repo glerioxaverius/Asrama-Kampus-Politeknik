@@ -1,4 +1,5 @@
 export interface Dorm {
+  available: any;
   id: number;
   name: string;
   location: string;

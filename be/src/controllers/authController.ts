@@ -41,9 +41,9 @@ export const login = async (req: Request, res: Response) => {
         console.log("Token generated:", token); // Log token yang dihasilkan
         res.cookie("authToken", token, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
+          secure: false,
           sameSite: "lax",
-          maxAge: 3600000, // Contoh 1 jam
+          maxAge: 3600000,
         });
         res.status(200).json({
           message: "Login Successful",

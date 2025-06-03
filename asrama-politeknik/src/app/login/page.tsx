@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/authContext";
 import { api } from "../lib/api";
+import Cookies from "js-cookie";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -18,7 +19,7 @@ const Login = () => {
     setError(null);
     try {
       console.log("Login Page: Mengirim permintaan login...");
-      const response = await api.post("/login", { email, password });
+      const response = await api.post("/auth/login", { email, password });
       console.log(
         "Login Page: Permintaan login berhasil. Respon:",
         response.data
